@@ -1,0 +1,38 @@
+services:
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: db
+      USER: odoo
+      PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Coolify}
+      ODOO_MASTER_PASSWORD: ${ODOO_MASTER_PASSWORD:?Set ODOO_MASTER_PASSWORD in Coolify}
+      SERVICE_FQDN_ODOO_8069:
+    expose:
+      - "8069"
+    volumes:
+      - odoo-data:/var/lib/odoo
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Coolify}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  odoo-data:
+  postgres-data:
