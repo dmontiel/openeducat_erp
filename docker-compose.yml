@@ -12,8 +12,8 @@ services:
       PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Coolify}
       ODOO_MASTER_PASSWORD: ${ODOO_MASTER_PASSWORD:?Set ODOO_MASTER_PASSWORD in Coolify}
       SERVICE_FQDN_ODOO_8069:
-    expose:
-      - "8069"
+    ports:
+      - "8069:8069"
     volumes:
       - odoo-data:/var/lib/odoo
     restart: unless-stopped
